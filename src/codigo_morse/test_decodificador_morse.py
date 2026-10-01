@@ -1,91 +1,92 @@
-"""Converte batidas em código Morse e traduz para texto.
+"""Testes do decodificador Morse. Rode: pytest"""
 
-1 batida  = ponto (.)
-2 batidas = traço (-)
+from decodificador_morse import DecodificadorMorse, texto_para_morse
 
-Pausas (silêncio depois da última batida):
-  curta   (>= silencio_simbolo_s) fecha o ponto/traço
-  média   (>= silencio_letra_s)   fecha a letra
-  longa   (>= silencio_palavra_s) fecha a palavra (espaço)
-"""
-
-MORSE = {
-    ".-": "A", "-...": "B", "-.-.": "C", "-..": "D", ".": "E", "..-.": "F",
-    "--.": "G", "....": "H", "..": "I", ".---": "J", "-.-": "K", ".-..": "L",
-    "--": "M", "-.": "N", "---": "O", ".--.": "P", "--.-": "Q", ".-.": "R",
-    "...": "S", "-": "T", "..-": "U", "...-": "V", ".--": "W", "-..-": "X",
-    "-.--": "Y", "--..": "Z",
-    "-----": "0", ".----": "1", "..---": "2", "...--": "3", "....-": "4",
-    ".....": "5", "-....": "6", "--...": "7", "---..": "8", "----.": "9",
-    ".-.-.-": ".", "--..--": ",", "..--..": "?", "-.-.--": "!", "-....-": "-",
-    "-..-.": "/",
-}
+DURACAO = 0.0232  # ~1024 amostras a 44100 Hz
 
 
-class DecodificadorMorse:
-    def __init__(
-        self,
-        duracao_bloco,
-        silencio_simbolo_s=0.6,
-        silencio_letra_s=1.5,
-        silencio_palavra_s=3.0,
-    ):
-        self.duracao_bloco = duracao_bloco
-        self.silencio_simbolo_s = silencio_simbolo_s
-        self.silencio_letra_s = silencio_letra_s
-        self.silencio_palavra_s = silencio_palavra_s
-        self.reiniciar()
+def traduzir(padrao):
+    """padrao: '.' = bloco de silêncio, 'B' = bloco com batida. Devolve o texto."""
+    dec = DecodificadorMorse(DURACAO)
+    texto = ""
+    for c in padrao:
+        for ev in dec.processar_bloco(c == "B"):
+            if ev[0] == "letra":
+                texto += ev[1]
+            elif ev[0] == "palavra":
+                texto += " "
+    return texto
 
-    def reiniciar(self):
-        """Descarta tudo o que estava sendo montado (batidas, símbolos e letra)."""
-        self._batidas = 0        # batidas do símbolo em andamento
-        self._silencio = 0.0     # silêncio desde a última batida
-        self._codigo = ""        # símbolos da letra em andamento
-        self._invalida = False   # letra com algum símbolo inválido
-        self._houve_letra = False  # já saiu letra desde o último espaço
 
-    def processar_bloco(self, batida):
-        """Chame uma vez por bloco (True se houve batida).
+PONTO = "B"
+TRACO = "B" + "." * 8 + "B"          # 2 batidas rápidas
+ENTRE_SIMBOLOS = "." * 30            # ~0,7 s
+ENTRE_LETRAS = "." * 70              # ~1,6 s
+ENTRE_PALAVRAS = "." * 140           # ~3,2 s
 
-        Devolve uma lista de eventos (quase sempre vazia):
-          ("simbolo", ".")            ponto ou traço reconhecido
-          ("invalido", n)             grupo com n batidas (só 1 ou 2 valem)
-          ("letra", "A", ".-")        letra completa (ou "?" se não existe)
-          ("palavra",)                fim de palavra
-        """
-        eventos = []
 
-        if batida:
-            self._batidas += 1
-            self._silencio = 0.0
-            return eventos
+def letra(*simbolos):
+    return ENTRE_SIMBOLOS.join(simbolos)
 
-        anterior = self._silencio
-        self._silencio += self.duracao_bloco
-        atual = self._silencio
 
-        if self._batidas and anterior < self.silencio_simbolo_s <= atual:
-            n = self._batidas
-            self._batidas = 0
-            if n == 1:
-                self._codigo += "."
-                eventos.append(("simbolo", "."))
-            elif n == 2:
-                self._codigo += "-"
-                eventos.append(("simbolo", "-"))
-            else:
-                self._invalida = True
-                eventos.append(("invalido", n))
+def test_letra_e_um_ponto():
+    assert traduzir(PONTO + ENTRE_LETRAS) == "E"
 
-        if (self._codigo or self._invalida) and anterior < self.silencio_letra_s <= atual:
-            letra = "?" if self._invalida else MORSE.get(self._codigo, "?")
-            eventos.append(("letra", letra, self._codigo))
-            self._codigo = ""
-            self._invalida = False
-            self._houve_letra = True
 
-        if self._houve_letra and anterior < self.silencio_palavra_s <= atual:
-            self._houve_letra = False
-            eventos.append(("palavra",))
+def test_letra_a():
+    assert traduzir(letra(PONTO, TRACO) + ENTRE_LETRAS) == "A"
 
-        return eventos
+
+def test_sos():
+    s = letra(PONTO, PONTO, PONTO)
+    o = letra(TRACO, TRACO, TRACO)
+    padrao = s + ENTRE_LETRAS + o + ENTRE_LETRAS + s + ENTRE_LETRAS
+    assert traduzir(padrao) == "SOS"
+
+
+def test_espaco_entre_palavras():
+    e = PONTO
+    t = TRACO
+    padrao = e + ENTRE_PALAVRAS + t + ENTRE_LETRAS
+    assert traduzir(padrao) == "E T"
+
+
+def test_tres_batidas_gera_interrogacao():
+    tres = "B" + "." * 8 + "B" + "." * 8 + "B"
+    assert traduzir(tres + ENTRE_LETRAS) == "?"
+
+
+def test_codigo_inexistente_gera_interrogacao():
+    padrao = letra(*[PONTO] * 7)  # 7 pontos não existe
+    assert traduzir(padrao + ENTRE_LETRAS) == "?"
+
+
+def test_reiniciar_descarta_letra_em_andamento():
+    dec = DecodificadorMorse(DURACAO)
+    for c in "B" + "." * 30:
+        dec.processar_bloco(c == "B")
+    dec.reiniciar()
+    eventos = []
+    for _ in range(200):
+        eventos += dec.processar_bloco(False)
+    assert eventos == []
+
+
+def test_texto_para_morse():
+    assert texto_para_morse("SOS") == ([["...", "---", "..."]], [])
+
+
+def test_texto_para_morse_palavras_acentos_e_ignorados():
+    palavras, ignorados = texto_para_morse("Olá  mundo #")
+    assert palavras == [["---", ".-..", ".-"], ["--", "..-", "-.", "-..", "---"]]
+    assert ignorados == ["#"]
+
+
+def test_ida_e_volta_texto_morse_texto():
+    palavras, _ = texto_para_morse("OI 2026")
+    padrao = ""
+    for pi, palavra in enumerate(palavras):
+        for li, codigo in enumerate(palavra):
+            padrao += letra(*[PONTO if s == "." else TRACO for s in codigo])
+            padrao += ENTRE_PALAVRAS if li == len(palavra) - 1 and pi < len(palavras) - 1 else ENTRE_LETRAS
+    assert traduzir(padrao + ENTRE_PALAVRAS) == "OI 2026 "
