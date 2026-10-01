@@ -1,4 +1,8 @@
-"""Etapa 1 do Método 1: detecta batidas captadas pelo microfone e as converte em bits."""
+"""Detecta batidas captadas pelo microfone e as converte em bits, com verificação de erros.
+
+Detecção de erros (Método 2): paridade par. A cada 8 bits de dados vem 1 bit de paridade,
+formando quadros de 9 bits. O receptor confere cada quadro assim que ele fecha.
+"""
 
 import queue
 import sys
@@ -9,6 +13,7 @@ import sounddevice as sd
 
 from decodificador_bits import DecodificadorDeBits
 from detector_batidas import DetectorDeBatidas
+from paridade import BITS_DADOS, BITS_POR_QUADRO, analisar_ultimo, dados_para_texto
 
 # ---------------- Parâmetros ajustáveis ----------------
 TAXA_AMOSTRAGEM = 44100     # amostras por segundo
@@ -20,7 +25,6 @@ INTERVALO_MINIMO_S = 0.15   # tempo mínimo entre duas detecções (segundos)
 SILENCIO_FIM_BIT_S = 0.6    # silêncio após as batidas que fecha o bit (segundos)
 DISPOSITIVO = None          # None = microfone padrão; ou número do dispositivo
 MOSTRAR_NIVEIS = False      # True: mostra nível e limiar (útil para ajustar)
-BITS_POR_GRUPO = 8          # separa a sequência em grupos (8 = bytes)
 SOM_ATIVO = True            # toca um som de confirmação a cada bit
 VOLUME = 0.5                # volume do som (0.0 a 1.0)
 SAIDA = None                # None = alto-falante padrão; ou número do dispositivo de saída
@@ -38,6 +42,9 @@ SONS = {
     1: [(988, 0.12), (0, 0.20), (988, 0.12)],      # bit 1: dois bipes agudos e curtos
     "erro": [(180, 0.35)],                         # grupo inválido: zumbido grave
 }
+# Bit que fecha um quadro com paridade errada: o som do bit seguido do zumbido de erro
+for _b in (0, 1):
+    SONS[f"{_b}erro"] = SONS[_b] + [(0, 0.10)] + SONS["erro"]
 
 # Cores ANSI: 0 em azul, 1 em verde
 COR = {0: "\033[1;97;44m", 1: "\033[1;30;42m"}
@@ -129,7 +136,7 @@ def reproduzir_bits(bits):
     # Pausa entre bits: o outro PC só fecha o bit após SILENCIO_FIM_BIT_S de silêncio, depois
     # toca o próprio som de confirmação e fica surdo por MARGEM_SOM_S. O próximo bit só pode
     # começar depois disso tudo.
-    pausa = (SILENCIO_FIM_BIT_S + max(DURACAO_SONS[0], DURACAO_SONS[1])
+    pausa = (SILENCIO_FIM_BIT_S + max(DURACAO_SONS.values())
              + MARGEM_SOM_S + FOLGA_ENTRE_BITS_S)
     print(f"\nReproduzindo {len(bits)} bit(s)... (Ctrl+C interrompe)")
     print(f"Começa em {ESPERA_INICIAL_S:.0f} s; {pausa:.1f} s entre os bits. "
@@ -155,6 +162,8 @@ def reproduzir_bits(bits):
 def menu_final(bits):
     """Depois de encerrar: aceita comandos para reproduzir os bits ou sair."""
     print(f"\nBits recebidos ({len(bits)}): {formatar_sequencia(bits)}")
+    for linha in descrever_quadros(bits):
+        print(linha)
     print("\nComandos:  r + ENTER = reproduzir/enviar os bits   |   s + ENTER = sair")
     while True:
         try:
@@ -178,13 +187,33 @@ def mostrar_bit_grande(bit):
 
 
 def formatar_sequencia(bits):
-    """Sequência colorida, separada em grupos de BITS_POR_GRUPO."""
+    """Sequência colorida, em quadros de 9 bits; o bit de paridade (o 9º) aparece sublinhado."""
     partes = []
     for i, b in enumerate(bits):
-        if i and i % BITS_POR_GRUPO == 0:
+        if i and i % BITS_POR_QUADRO == 0:
             partes.append("  ")
-        partes.append(f"{COR[b]} {b} {RESET}")
+        sublinhado = "\033[4m" if i % BITS_POR_QUADRO == BITS_DADOS else ""
+        partes.append(f"{COR[b]}{sublinhado} {b} {RESET}")
     return "".join(partes)
+
+
+def descrever_quadros(bits):
+    """Resumo de cada quadro completo (e do quadro incompleto no fim, se houver)."""
+    linhas = []
+    for ini in range(0, len(bits) - BITS_POR_QUADRO + 1, BITS_POR_QUADRO):
+        quadro = bits[ini:ini + BITS_POR_QUADRO]
+        info = analisar_ultimo(bits[:ini + BITS_POR_QUADRO])
+        dados, ok = info["quadro"]
+        valor, letra = dados_para_texto(dados)
+        txt = f" '{letra}'" if letra else ""
+        estado = "\033[1;30;42m OK \033[0m" if ok else "\033[1;97;41m ERRO \033[0m"
+        linhas.append(f"  Quadro {ini // BITS_POR_QUADRO + 1}: {''.join(map(str, dados))}"
+                      f" (valor {valor}{txt}) paridade={quadro[-1]}  {estado}")
+    sobra = len(bits) % BITS_POR_QUADRO
+    if sobra:
+        linhas.append(f"  Quadro incompleto: faltam {BITS_POR_QUADRO - sobra} bit(s) "
+                      "para fechar o último (não foi verificado).")
+    return linhas
 
 
 def main():
@@ -258,11 +287,33 @@ def main():
                     print(f"\nGrupo com {contagem} batidas ignorado (use 1 batida = 0, 2 batidas = 1).")
                     dur = tocar("erro")
                 else:
-                    dur = tocar(bit)   # som próprio de cada bit
                     bits.append(bit)
+                    info = analisar_ultimo(bits)
+                    quadro_com_erro = info["quadro"] is not None and not info["quadro"][1]
+                    # som próprio de cada bit; se o quadro falhou na paridade, vem o zumbido junto
+                    dur = tocar(f"{bit}erro" if quadro_com_erro else bit)
                     mostrar_bit_grande(bit)
-                    print(f"\n    Bit #{len(bits)}: {bit}")
-                    print(f"    Sequência: {formatar_sequencia(bits)}\n")
+                    papel = ("PARIDADE" if info["eh_paridade"]
+                             else f"dado {info['posicao']}/{BITS_DADOS}")
+                    print(f"\n    Bit #{len(bits)}: {bit}   ({papel})")
+                    print(f"    Sequência: {formatar_sequencia(bits)}")
+
+                    if info["paridade_esperada"] is not None:
+                        p = info["paridade_esperada"]
+                        print(f"    Próximo bit = PARIDADE. Valor correto: {p} "
+                              f"({'2 batidas' if p else '1 batida'}).")
+                    if info["quadro"] is not None:
+                        dados, ok = info["quadro"]
+                        valor, letra = dados_para_texto(dados)
+                        txt = f" '{letra}'" if letra else ""
+                        if ok:
+                            print(f"    \033[1;30;42m QUADRO OK \033[0m {''.join(map(str, dados))}"
+                                  f" (valor {valor}{txt})")
+                        else:
+                            print(f"    \033[1;97;41m ERRO DE PARIDADE \033[0m quadro "
+                                  f"{''.join(map(str, dados))} é suspeito. "
+                                  "Retransmita (ENTER reinicia e realinha os quadros).")
+                    print()
 
                 if dur:
                     blocos_mudo = int((dur + MARGEM_SOM_S) / duracao_bloco) + 1
