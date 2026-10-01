@@ -9,7 +9,7 @@ source .venv/bin/activate
 pip install sounddevice numpy pytest
 
 # 3. Executar o receptor
-python3 src/receptor.py
+python3 src/leitura_bits/receptor.py
 
 # 4. Executar os testes automáticos
 pytest tests/
