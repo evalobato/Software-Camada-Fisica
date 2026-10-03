@@ -3,13 +3,22 @@ sudo apt update
 sudo apt install python3 python3-venv python3-pip libportaudio2
 
 # 2. Ambiente virtual e bibliotecas (na raiz do repositório)
+#Linux:
 cd SOFTWARE-CAMADA-FISICA
 python3 -m venv .venv
 source .venv/bin/activate
 pip install sounddevice numpy pytest
 
+#Windows:
+python -m venv venv
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser # Importante aceitar caso apareça
+.\venv\Scripts\Activate.ps1 #powershell
+venv\Scripts\activate #cmd
+pip install sounddevice numpy pytest
+
 # 3. Executar o receptor
-python3 src/leitura_bits/receptor.py
+python3 receptor.py
+python3 receptor_morse.py
 
 # 4. Executar os testes automáticos
 pytest tests/

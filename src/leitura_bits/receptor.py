@@ -4,15 +4,19 @@ Detecção de erros (Método 2): paridade par. A cada 8 bits de dados vem 1 bit 
 formando quadros de 9 bits. O receptor confere cada quadro assim que ele fecha.
 """
 
+import os
 import queue
 import sys
 import threading
+import time
+import traceback
 
 import numpy as np
 import sounddevice as sd
 
 from decodificador_bits import DecodificadorDeBits
 from detector_batidas import DetectorDeBatidas
+import plataforma
 from paridade import BITS_DADOS, BITS_POR_QUADRO, analisar_ultimo, dados_para_texto
 
 # ---------------- Parâmetros ajustáveis ----------------
@@ -68,12 +72,20 @@ def ler_teclado():
     Durante a escuta, ENTER reinicia os bits. Depois de encerrado, o que for
     digitado vai para a fila de comandos (menu final).
     """
+    seguidos = 0
     while True:
         try:
             linha = input()
+            seguidos = 0
         except EOFError:
-            fila_comandos.put(None)
-            return
+            # No Windows, o Ctrl+C aborta a leitura em andamento e isso chega como EOFError.
+            # Só é fim de entrada de verdade se o erro se repetir.
+            seguidos += 1
+            if seguidos >= 3:
+                fila_comandos.put(None)
+                return
+            time.sleep(0.2)
+            continue
         if encerrado.is_set():
             fila_comandos.put(linha.strip().lower())
         else:
@@ -170,7 +182,10 @@ def menu_final(bits):
             comando = fila_comandos.get()
         except KeyboardInterrupt:
             return
-        if comando in (None, "s", "sair"):
+        if comando is None:
+            print("Entrada do teclado indisponível; encerrando.")
+            return
+        if comando in ("s", "sair"):
             return
         if comando in ("r", "reproduzir"):
             reproduzir_bits(bits)
@@ -216,7 +231,25 @@ def descrever_quadros(bits):
     return linhas
 
 
+def preparar_plataforma():
+    """Terminal, argumentos de linha de comando e taxa de amostragem. False = nada mais a fazer."""
+    global DISPOSITIVO, SAIDA, TAXA_AMOSTRAGEM
+    plataforma.configurar_saida()
+    args = plataforma.ler_argumentos(__doc__.strip().splitlines()[0])
+    if args.listar:
+        plataforma.listar_dispositivos(sd)
+        return False
+    if args.entrada is not None:
+        DISPOSITIVO = args.entrada
+    if args.saida is not None:
+        SAIDA = args.saida
+    TAXA_AMOSTRAGEM = plataforma.escolher_taxa(sd, DISPOSITIVO, SAIDA, TAXA_AMOSTRAGEM)
+    return True
+
+
 def main():
+    if not preparar_plataforma():
+        return
     blocos_calibracao = int(SEGUNDOS_CALIBRACAO * TAXA_AMOSTRAGEM / TAMANHO_BLOCO)
     detector = DetectorDeBatidas(
         taxa_amostragem=TAXA_AMOSTRAGEM,
@@ -250,6 +283,7 @@ def main():
             callback=callback_audio,
         ):
             aviso_escutando = False
+            maior_nivel = 0.0   # maior nível ouvido na calibração
             while True:
                 bloco = fila_de_blocos.get()
                 if blocos_mudo > 0 and detector.calibrado:
@@ -257,6 +291,8 @@ def main():
                     blocos_mudo -= 1
                     bloco = np.zeros_like(bloco)
                 batida = detector.processar_bloco(bloco)
+                if not aviso_escutando:
+                    maior_nivel = max(maior_nivel, detector.ultimo_nivel)
 
                 if pedido_reiniciar.is_set():
                     pedido_reiniciar.clear()
@@ -268,6 +304,10 @@ def main():
 
                 if detector.calibrado and not aviso_escutando:
                     print(f"Limiar definido: {detector.limiar:.4f}")
+                    if maior_nivel == 0.0:
+                        print("AVISO: o microfone entregou só silêncio absoluto. Verifique a permissão de "
+                              "microfone do sistema e o dispositivo (python <programa> --listar).",
+                              file=sys.stderr)
                     print("Escutando o microfone... (ENTER = reiniciar bits, Ctrl+C = sair)\n")
                     aviso_escutando = True
 
@@ -330,4 +370,17 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    codigo_de_saida = 0
+    try:
+        main()
+    except SystemExit as saida:
+        codigo_de_saida = saida.code if isinstance(saida.code, int) else 1
+    except Exception:
+        traceback.print_exc()
+        codigo_de_saida = 1
+    finally:
+        # A thread do teclado fica parada em input(); sair direto evita o erro
+        # "Fatal Python error ... daemon threads" ao encerrar.
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(codigo_de_saida)

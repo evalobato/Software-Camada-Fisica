@@ -1,3 +1,82 @@
+# Rodar em outro computador (Windows, Linux ou macOS)
+
+O mesmo código roda nos três sistemas. Um computador toca (emite) e o outro escuta (recebe)
+pelo microfone; os dois usam os mesmos arquivos.
+
+## Arquivos que precisam estar juntos na mesma pasta
+
+Bits:  `receptor.py`, `decodificador_bits.py`, `paridade.py`, `detector_batidas.py`, `plataforma.py`
+Morse: `receptor_morse.py`, `decodificador_morse.py`, `detector_batidas.py`, `plataforma.py`
+
+Use a mesma versão dos arquivos nos dois computadores (os tempos de pausa precisam combinar).
+
+## Instalação (uma vez)
+
+Precisa de Python 3.8 ou mais novo.
+
+**Windows** (PowerShell ou cmd)
+```
+py -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+**Linux** (Ubuntu/Debian)
+```
+sudo apt install libportaudio2 python3-venv
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+**macOS**
+```
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+Na primeira execução o macOS pede permissão de microfone para o Terminal: aceite. Se negar por
+engano, libere em Ajustes do Sistema > Privacidade e Segurança > Microfone.
+
+Em cada terminal novo, ative o ambiente de novo (`.venv\Scripts\activate` ou `source .venv/bin/activate`).
+
+## Rodar
+
+```
+python receptor.py            # bits
+python receptor_morse.py      # Morse
+```
+
+Fique em silêncio durante os 2 s de calibração. Ctrl+C encerra a escuta e abre o menu final
+(`r` reproduz/emite, `s` sai; no Morse também `e` para digitar um texto).
+
+## Escolher microfone e alto-falante
+
+```
+python receptor.py --listar
+python receptor.py --entrada 1 --saida 3
+```
+O número vem da lista. Sem as opções, usa o microfone e o alto-falante padrão do sistema.
+
+## Para dois computadores se entenderem
+
+1. No computador que vai ler: rode o programa e espere "Escutando o microfone...".
+2. No computador que vai enviar: encerre com Ctrl+C e use `r` (ou `e` no Morse).
+3. Deixe o alto-falante de um perto do microfone do outro, com volume médio/alto e o ambiente quieto.
+4. Se não ler nada, rode o leitor com `MOSTRAR_NIVEIS = True` (topo do arquivo) e confira se o nível
+   passa do limiar quando o outro toca. Se não passar, aumente o volume ou aproxime os computadores.
+
+## Problemas comuns
+
+- **Nada é detectado, limiar baixíssimo**: o sistema pode estar bloqueando o microfone (permissão) ou
+  usando o dispositivo errado. Use `--listar`. O programa avisa quando o microfone entrega só silêncio.
+- **Cancelamento de ruído / "isolamento de voz"** (Windows, macOS, alguns notebooks) pode apagar os
+  bipes. Desligue nas configurações de som do microfone.
+- **`PortAudio library not found`** (Linux): `sudo apt install libportaudio2`.
+- **`Invalid sample rate`**: o programa já tenta 48000 Hz sozinho; se ainda falhar, escolha outro
+  dispositivo com `--entrada`.
+- **Símbolos virando `?` ou quadrados**: use Windows Terminal, cmd ou PowerShell comuns (não o ISE).
+
 # Software-Camada-Física
 
 ## As sete camadas do modelo ISO/OSI
