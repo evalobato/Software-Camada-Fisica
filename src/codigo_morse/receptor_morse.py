@@ -43,6 +43,7 @@ SAIDA = None                # None = alto-falante padrão; ou número do disposi
 MARGEM_SOM_S = 0.25         # tempo extra sem escutar depois do som (evita eco)
 ESPERA_INICIAL_S = 2.0      # na emissão: tempo antes do primeiro símbolo
 FOLGA_S = 0.3               # na emissão: folga extra somada às pausas
+PRE_ROLL_S = 0.15           # silêncio antes do som de confirmação (o dispositivo "acorda")
 # --------------------------------------------------------
 
 # Sons: lista de (frequência em Hz, duração em s); frequência 0 = pausa.
@@ -63,11 +64,13 @@ RESET = "\033[0m"
 
 fila_de_blocos = queue.Queue()
 pedido_reiniciar = threading.Event()
+MODO_EMITIR = False                  # --emitir: não escuta, só emite
 encerrado = threading.Event()        # ligado quando o receptor é encerrado (Ctrl+C)
 fila_comandos = queue.Queue()        # comandos digitados depois de encerrar
 
 SONS_PRONTOS = {}
 DURACAO_SONS = {}
+SONS_CONFIRMA = {}
 
 
 def ler_teclado():
@@ -127,8 +130,11 @@ def montar_som(partes):
 
 def preparar_sons():
     for nome, partes in SONS.items():
-        SONS_PRONTOS[nome] = montar_som(partes)
+        SONS_PRONTOS[nome] = montar_som(partes)          # usado na emissão (onda única)
         DURACAO_SONS[nome] = sum(dur for _, dur in partes)
+        # Confirmação: um instante de silêncio antes, para o dispositivo "acordar" sem comer o bipe
+        SONS_CONFIRMA[nome] = np.concatenate(
+            [np.zeros(int(PRE_ROLL_S * TAXA_AMOSTRAGEM), dtype=np.float32), SONS_PRONTOS[nome]])
 
 
 def tocar(nome):
@@ -137,12 +143,12 @@ def tocar(nome):
     if not SOM_ATIVO:
         return 0.0
     try:
-        sd.play(SONS_PRONTOS[nome], samplerate=TAXA_AMOSTRAGEM, device=SAIDA)
+        sd.play(SONS_CONFIRMA[nome], samplerate=TAXA_AMOSTRAGEM, device=SAIDA)
     except sd.PortAudioError as erro:
         print(f"Sem som de confirmação ({erro}).", file=sys.stderr)
         SOM_ATIVO = False
         return 0.0
-    return DURACAO_SONS[nome]
+    return DURACAO_SONS[nome] + PRE_ROLL_S
 
 
 # --------------------------- Emissão ---------------------------
@@ -186,32 +192,34 @@ def plano_de_emissao(palavras):
     return itens
 
 
-def duracao_da_emissao(plano):
-    return sum(i["espera"] + DURACAO_SONS[i["simbolo"]] for i in plano)
-
-
 def emitir(palavras):
-    """Toca a mensagem em Morse, um símbolo por vez (o outro PC lê pelo microfone)."""
+    """Toca a mensagem em Morse (o outro PC lê pelo microfone).
+
+    Os sons e as pausas são montados numa onda só e tocados de uma vez, para a temporização
+    ficar exata e nenhum bipe ser cortado.
+    """
     plano = plano_de_emissao(palavras)
     if not plano:
         print("Nada para emitir.")
         return
-    texto = " ".join("".join(MORSE.get(c, "?") for c in p) for p in palavras)
-    print(f"\nEmitindo: {texto}")
-    print(f"Duração estimada: {duracao_da_emissao(plano):.0f} s. Começa em {ESPERA_INICIAL_S:.0f} s. "
-          "Para outro PC ler, ele deve estar escutando e perto do alto-falante. (Ctrl+C interrompe)\n")
-    try:
-        for item in plano:
-            sd.sleep(int(item["espera"] * 1000))
+    itens = []
+    for item in plano:
+        def acao(item=item):
             if item["inicio_de_palavra"]:
                 print("  (espaço)")
             if item["inicio_de_letra"]:
                 print(f"\n  Letra {AMARELO} {item['letra']} {RESET}  {item['codigo']}")
             print(f"    {desenhar_codigo(item['simbolo'])}")
-            sd.play(SONS_PRONTOS[item["simbolo"]], samplerate=TAXA_AMOSTRAGEM, device=SAIDA)
-            sd.wait()
+        itens.append((item["espera"], item["simbolo"], acao))
+    onda, marcos, duracao = plataforma.montar_roteiro(itens, SONS_PRONTOS, TAXA_AMOSTRAGEM)
+
+    texto = " ".join("".join(MORSE.get(c, "?") for c in p) for p in palavras)
+    print(f"\nEmitindo: {texto}")
+    print(f"Duração estimada: {duracao:.0f} s. Começa em {ESPERA_INICIAL_S:.0f} s. "
+          "Para outro PC ler, ele deve estar escutando e perto do alto-falante. (Ctrl+C interrompe)\n")
+    try:
+        plataforma.tocar_com_marcos(sd, onda, TAXA_AMOSTRAGEM, SAIDA, marcos)
     except KeyboardInterrupt:
-        sd.stop()
         print("\nEmissão interrompida.")
         return
     except sd.PortAudioError as erro:
@@ -271,12 +279,13 @@ def desenhar_codigo(codigo):
 
 def preparar_plataforma():
     """Terminal, argumentos de linha de comando e taxa de amostragem. False = nada mais a fazer."""
-    global DISPOSITIVO, SAIDA, TAXA_AMOSTRAGEM
+    global DISPOSITIVO, SAIDA, TAXA_AMOSTRAGEM, MODO_EMITIR
     plataforma.configurar_saida()
     args = plataforma.ler_argumentos(__doc__.strip().splitlines()[0])
     if args.listar:
         plataforma.listar_dispositivos(sd)
         return False
+    MODO_EMITIR = args.emitir
     if args.entrada is not None:
         DISPOSITIVO = args.entrada
     if args.saida is not None:
@@ -289,6 +298,12 @@ def main():
     if not preparar_plataforma():
         return
     preparar_sons()
+    if MODO_EMITIR:
+        encerrado.set()
+        threading.Thread(target=ler_teclado, daemon=True).start()
+        print("Modo emissão: o microfone não é usado.")
+        menu_final("")
+        return
     p_simbolo, p_letra, _ = pausas_de_emissao()
     if p_simbolo >= SILENCIO_LETRA_S - 0.3:
         print(f"Aviso: a pausa entre símbolos na emissão ({p_simbolo:.1f} s) está perto de "

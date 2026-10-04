@@ -79,3 +79,34 @@ def test_analisar_ultimo_marca_quadro_errado_e_segue_para_o_proximo():
     assert analisar_ultimo(bits)["quadro"][1] is False
     bits.append(0)  # primeiro bit do segundo quadro
     assert analisar_ultimo(bits)["posicao"] == 1
+
+
+def test_quadros_do_texto_e_volta():
+    from paridade import quadros_do_texto, texto_dos_quadros_ok
+    bits = quadros_do_texto("Olá, mundo!")
+    assert len(bits) % BITS_POR_QUADRO == 0
+    assert all(quadro_valido(bits[i:i + 9]) for i in range(0, len(bits), 9))
+    assert texto_dos_quadros_ok(bits) == ("Olá, mundo!", 0)
+
+
+def test_texto_dos_quadros_ok_pula_quadro_com_erro():
+    from paridade import quadros_do_texto, texto_dos_quadros_ok
+    bits = quadros_do_texto("abc")
+    bits[9 + 2] ^= 1   # estraga o quadro de 'b'
+    assert texto_dos_quadros_ok(bits) == ("ac", 1)
+
+
+def test_bits_digitados():
+    from paridade import quadros_de_bits_digitados
+    assert quadros_de_bits_digitados("01001000") == montar_quadro(H)
+    assert quadros_de_bits_digitados("0100 1000  01001000") == montar_quadro(H) * 2
+
+
+def test_bits_digitados_invalidos():
+    from paridade import quadros_de_bits_digitados
+    for ruim in ("", "0101", "0100100a", "010010000"):
+        try:
+            quadros_de_bits_digitados(ruim)
+        except ValueError:
+            continue
+        raise AssertionError(f"deveria rejeitar {ruim!r}")

@@ -57,3 +57,46 @@ def analisar_ultimo(bits):
         quadro = bits[-BITS_POR_QUADRO:]
         info["quadro"] = (quadro[:BITS_DADOS], quadro_valido(quadro))
     return info
+
+
+def quadros_do_texto(texto):
+    """Texto -> bits prontos para emitir: cada byte (UTF-8) vira um quadro de 9 bits com paridade."""
+    bits = []
+    for byte in texto.encode("utf-8"):
+        bits += montar_quadro([int(b) for b in format(byte, "08b")])
+    return bits
+
+
+def quadros_de_bits_digitados(texto):
+    """Bits digitados à mão ("01001000 01101001") -> quadros de 9 bits com paridade.
+
+    Espaços são ignorados. Levanta ValueError se tiver algo além de 0 e 1 ou se o total
+    não for múltiplo de 8.
+    """
+    limpo = "".join(texto.split())
+    if not limpo:
+        raise ValueError("Nenhum bit digitado.")
+    if any(c not in "01" for c in limpo):
+        raise ValueError("Use só 0 e 1 (espaços são permitidos).")
+    if len(limpo) % BITS_DADOS:
+        raise ValueError(f"A quantidade de bits precisa ser múltiplo de {BITS_DADOS} "
+                         f"(você digitou {len(limpo)}).")
+    bits = []
+    for i in range(0, len(limpo), BITS_DADOS):
+        bits += montar_quadro([int(b) for b in limpo[i:i + BITS_DADOS]])
+    return bits
+
+
+def texto_dos_quadros_ok(bits):
+    """Junta os bytes dos quadros com paridade correta e decodifica como texto (UTF-8).
+
+    Quadros com erro ficam de fora. Devolve (texto, quantidade_de_quadros_com_erro).
+    """
+    dados, erros = bytearray(), 0
+    for ini in range(0, len(bits) - BITS_POR_QUADRO + 1, BITS_POR_QUADRO):
+        quadro = bits[ini:ini + BITS_POR_QUADRO]
+        if quadro_valido(quadro):
+            dados.append(int("".join(str(b) for b in quadro[:BITS_DADOS]), 2))
+        else:
+            erros += 1
+    return dados.decode("utf-8", errors="replace"), erros

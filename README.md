@@ -48,7 +48,23 @@ python receptor_morse.py      # Morse
 ```
 
 Fique em silêncio durante os 2 s de calibração. Ctrl+C encerra a escuta e abre o menu final
-(`r` reproduz/emite, `s` sai; no Morse também `e` para digitar um texto).
+(`r` reemite, `e` digita um texto e emite, `b` digita bits e emite, `s` sai).
+
+## Só emitir (sem escutar)
+
+```
+python receptor.py --emitir
+python receptor_morse.py --emitir
+```
+Não usa o microfone e abre direto o menu de emissão:
+- `e` = digita um texto e ele é emitido (bits: cada letra vira 8 bits + 1 de paridade; Morse: letras em Morse)
+- `b` = (só no programa de bits) digita bits em grupos de 8, por exemplo `01001000 01101001`; a paridade é
+  adicionada sozinha
+- `r` = emite de novo o que foi recebido ou digitado por último
+- `s` = sai
+
+O mesmo menu aparece depois do Ctrl+C na escuta. Cada bit ou símbolo toca o seu som: 1 bipe grave e
+longo (bit 0 / ponto) ou 2 bipes agudos e curtos (bit 1 / traço), que o outro computador conta como 1 ou 2 batidas.
 
 ## Escolher microfone e alto-falante
 
