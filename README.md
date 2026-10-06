@@ -344,12 +344,12 @@ Valor discreto
  Código binário
 ```
 PCM é o processo completo que executa os passos acima, transformando cada amostra final do sinal em uma palavra binária está
----
+
 
 ### 6. Otimizações de Banda e Codificação de Fonte
 
 Após gerar os bits iniciais, a Camada Física aplica técnicas para reduzir a taxa de transmissão necessária (bits por segundo), driblando as limitações de capacidade física do meio e diminuindo o ruído de quantização.
----
+
 
 #### Companding
 A otimização logarítmica da faixa dinânmica, combate o ruído de quantização alterando para o formato não uniforme. Sendi formada pela junção das palavras:
@@ -455,7 +455,7 @@ A capacidade do canal está relacionada ao **teorema de Shannon-Hartley**.
 
 ### 11. Resumo
 
-A **Camada Física** é responsável pela transmissão dos bits através de um meio físico. Para isso, envolve características como sinalização, codificação, modulação, largura de banda, amostragem, quantização e controle dos efeitos do ruído.
+A Camada Física é responsável pela transmissão dos bits através de um meio físico. Para isso, envolve características como sinalização, codificação, modulação, largura de banda, amostragem, quantização e controle dos efeitos do ruído.
 
 O processo de comunicação pode ser representado de forma simplificada:
 
