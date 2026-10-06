@@ -486,4 +486,13 @@ O ADC produz o error de quantização, que consiste na diferença entre o sinal 
 
 Nessa conversão, o princípio de Nyquist afirma a que as amostras devem ser no mínimo o dobro da largura de banda máxima do sinal analógico que está sendo convertida, a fim de que o sinal seja reproduzido com precisão. A taxa de amostragem é o número de amostras colhidas por segundo, as unidades para a taxa de amostragem são amostras por segundo (sps) ou Hertz (Hz). Taxas de amostragem mais altas normalmente vêm ao custo de velocidades mais lentas e maior consumo de energia.
 
+O objetivo foi representar o comportamento da Camada Física do modelo ISO/OSI, simulando o processo de transmissão, recepção e interpretação de sinais. Nesse contexto, o projeto utiliza um meio de transmissão responsável por transportar os sinais até a camada física, onde são recebidos e interpretados.
+
+Para ambos os métodos, o meio de transmissão escolhido foi o meio sonoro. Dessa forma, as mensagens são transmitidas por meio de sinais sonoros, que funcionam como uma representação do meio responsável pelo transporte das informações. Em um dos métodos, os sinais são interpretados como informações binárias, enquanto no outro são traduzidos para o código Morse. Assim, ambos os métodos simulam o comportamento de um meio de transmissão que transporta os sinais entre os computadores.
+
+Após a transmissão, a Camada Física recebe os sinais para que possam ser processados pela máquina. No projeto, essa etapa foi representada pelos receptores, responsáveis por captar os sinais enviados por meio do microfone dos computadores, estabelecendo uma relação direta com o hardware de áudio. Para realizar essa comunicação, foram utilizadas diferentes bibliotecas, sendo uma das principais a SoundDevice, responsável pela reprodução e captura dos sinais de áudio.
+
+A terceira etapa é composta pelos decodificadores, responsáveis por interpretar os sinais recebidos e convertê-los para a representação correspondente. Cada método possui seu próprio decodificador. No método binário, uma batida representa o valor 0 e duas batidas representam o valor 1. No método Morse, uma batida representa um ponto (.) e duas batidas representam um traço (-). Como forma de identificar sinais inválidos, três ou mais batidas consecutivas não são consideradas como um sinal válido. No método binário, também é utilizado o bit de paridade como mecanismo de detecção de erros.
+
+Dessa forma, o projeto representa, de maneira simplificada, as etapas de transmissão, recepção e interpretação de sinais, relacionando o funcionamento dos métodos implementados aos conceitos da Camada Física do modelo ISO/OSI.
 ## Segundo Metódo ##
