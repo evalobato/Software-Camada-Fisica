@@ -95,7 +95,7 @@ A camada física não trabalha com o significado ou a organização dos bits. Su
 #### Principais funções
 
 * **Codificação de linha:** técnicas como Manchester, 8b/10b e 4D-PAM5 mapeiam bits em níveis de sinal ou transições.
-* **Multiplexação:** técnicas como FDM e WDM permitem transportar diferentes canais utilizando o mesmo meio.
+* **Multiplexação:** técnicas como FDM(Multiplexação por Divisão de Frequência) e WDM(Multiplexação por Divisão de Comprimento de Onda), permitem transportar diferentes canais utilizando o mesmo meio.
 * **Transmissão física:** utiliza meios como par trançado, cabo coaxial, fibra óptica e rádio.
 * **Conectores e transceptores:** dispositivos como módulos SFP fazem a interface entre os equipamentos e o meio físico.
 * **Padronização:** especificações são definidas por organizações como IEEE, ITU e 3GPP.
@@ -135,7 +135,7 @@ A Camada Física está presente em diversas tecnologias, como:
 
 Em uma transmissão analógica, o sinal pode sofrer degradação conforme percorre o meio físico. Quando o sinal enfraquece, torna-se mais difícil diferenciá-lo do ruído.
 
-Um problema importante é que, ao **amplificar um sinal analógico**, o ruído presente nele também é amplificado. Com o aumento da distância, isso pode comprometer a qualidade da comunicação.
+Um problema importante é que, ao amplificar um sinal analógico, o ruído presente nele também é amplificado. Com o aumento da distância, isso pode comprometer a qualidade da comunicação.
 
 #### Sinais digitais
 
@@ -145,9 +145,7 @@ Por isso, sistemas digitais apresentam maior facilidade para recuperar a informa
 
 #### Conversão analógico → digital
 
-Um exemplo é o **PCM (Pulse Code Modulation — Modulação por Código de Pulso)**, utilizado na codificação de voz.
-
-O processo de conversão possui as seguintes etapas:
+Um exemplo é o PCM (Modulação por Código de Pulso), utilizado na codificação de voz. O processo de conversão possui as seguintes etapas:
 
 ```text
 Sinal analógico
@@ -163,42 +161,34 @@ Codificação
 Dados digitais
 ```
 
-Na origem existe um conversor **A/D (analógico-digital)**. No destino, um conversor **D/A (digital-analógico)** pode reconstruir o sinal.
+Na origem existe um conversor A/D (analógico-digital). No destino, um conversor D/A (digital-analógico) para reconstruir o sinal.
 
 ---
 
 ### 3. Largura de banda
 
-A **largura de banda (Bandwidth)** representa a faixa de frequências que pode ser utilizada por um sistema de comunicação.
+A largura de banda  representa a faixa de frequências que pode ser utilizada por um sistema de comunicação.
 
 #### Voz
 
-A maior parte da energia da fala está aproximadamente entre **200–300 Hz e 2.700–2.800 Hz**. O material também apresenta uma largura de banda de **4.000 Hz** para comunicação de voz padrão.
+A maior parte da energia da fala está aproximadamente entre 200–300 Hz e 2.700–2.800 Hz. O material também apresenta uma largura de banda de 4.000 Hz para comunicação de voz padrão.
 
 #### Filtragem
 
-A filtragem remove componentes de frequência mais alta do sinal e facilita as etapas seguintes da conversão.
-
-Um dos objetivos do filtro limitador de banda é evitar o **aliasing**, também chamado de sobreposição espectral causada por uma amostragem inadequada.
+A filtragem remove componentes de frequência mais alta do sinal e facilita as etapas seguintes da conversão. Um dos objetivos do filtro limitador de banda é evitar a sobreposição espectral causada por uma amostragem inadequada, gerando o aliasing(falseamento do sinal), que ocorre quando as amostras coletadas são baixas em comparação com a velocidade da variação do sinal origial.
 
 #### Largura de banda e meio físico
 
-O meio utilizado na transmissão influencia diretamente as características da comunicação.
+O meio utilizado na transmissão influencia diretamente as características da comunicação. Como nas aplicações seguintes:
 
-Exemplos apresentados no material:
-
-* **Fibra monomodo:** pode alcançar dezenas de quilômetros com taxas superiores a 100 Gbps.
+* **Fibra monomodo:** pode alcançar dezenas de quilômetros com taxas superiores a 100 Gbps, trasmite apenas um único feixe ou modo de luz por vez.
 * **Cat 6A:** suporta Ethernet de 10 Gbps em distâncias de até 100 metros.
-
-A capacidade de um canal também é limitada pelo **teorema de Shannon-Hartley**.
 
 ---
 
 ### 4. Taxa de amostragem
 
-A **amostragem** consiste em representar um sinal analógico por meio de amostras obtidas em determinados intervalos de tempo.
-
-No processo apresentado, a amostragem utiliza **PAM (Pulse Amplitude Modulation — Modulação por Amplitude de Pulso)**.
+A amostragem consiste em representar um sinal analógico por meio de amostras obtidas em determinados intervalos de tempo. No processo apresentado, a amostragem utiliza PAM (PModulação por Amplitude de Pulso), no qual os dados são codificados na aplitude de uma série de pulsos elétricos ou ópticos em intervalos de tempo regulares.
 
 #### Critério de Nyquist
 
@@ -215,7 +205,7 @@ Onde:
 
 #### Aliasing
 
-O **aliasing** ocorre quando a frequência de amostragem é insuficiente:
+O aliasing ocorre quando a frequência de amostragem é insuficiente:
 
 ```text
 Fs < 2 × BW
@@ -223,7 +213,7 @@ Fs < 2 × BW
 
 Nesse caso, ocorre sobreposição entre os componentes espectrais das amostras e do sinal de entrada. O resultado pode ser um sinal falso, que não corresponde ao sinal original.
 
-#### Exemplo: telefonia
+##### Exemplo: telefonia
 
 Na telefonia, são utilizadas:
 
@@ -232,29 +222,21 @@ Na telefonia, são utilizadas:
 = 64.000 bits/s
 = 64 kbps
 ```
-
-O material também apresenta técnicas de redução da taxa:
-
-* **DPCM:** até 48 kbps;
-* **ADPCM (G.726):** 32 kbps.
-
 ---
 
-### 5. Modulação
+### 5. Modulação do pulso 
 
-A **modulação** altera determinadas características de uma onda ou portadora para representar informações.
+A modulação altera determinadas características de uma onda ou portadora para representar informações.
 
-Entre as técnicas de modulação digital apresentadas estão:
+**Modulação digital**
 
 * **ASK (Amplitude Shift Keying):** utiliza variações de amplitude;
 * **PSK (Phase Shift Keying):** utiliza variações de fase;
 * **QAM (Quadrature Amplitude Modulation):** utiliza variações de amplitude e fase.
 
-A ordem da modulação determina quantos **bits por símbolo** podem ser transmitidos.
+A ordem da modulação determina quantos bits por símbolo podem ser transmitidos.
 
-#### Modulação de pulso
-
-O material também apresenta:
+**Modulação de pulso**
 
 * **PAM:** modula a amplitude de um trem de pulsos;
 * **PCM:** transforma cada amostra em uma palavra binária;
@@ -262,11 +244,9 @@ O material também apresenta:
 
 ---
 
-### 6. Quantização
+#### Quantização
 
-A **quantização** transforma cada amostra analógica em um valor discreto.
-
-Na quantização uniforme, os intervalos possuem espaçamento igual dentro da faixa dinâmica. Cada amostra é associada ao intervalo que apresenta a amplitude mais próxima.
+A quantização transforma cada amostra analógica em um valor discreto. Na quantização uniforme, os intervalos possuem espaçamento igual dentro da faixa dinâmica. Cada amostra é associada ao intervalo que apresenta a amplitude mais próxima.
 
 De forma simplificada:
 
@@ -286,37 +266,10 @@ Valor discreto
 
 ### 7. Companding
 
-**Companding** é formado pela combinação de:
+Companding é formado pela combinação de:
 
-* **Compressão**, realizada na origem;
-* **Expansão**, realizada no destino.
-
-A compressão é logarítmica e permite substituir a quantização uniforme por uma quantização não uniforme.
-
-O objetivo apresentado no material está relacionado à melhoria da relação sinal-ruído para diferentes níveis de amplitude do sinal.
-
-#### A-law e μ-law
-
-O padrão **ITU-T G.711** apresenta as técnicas **A-law** e **μ-law**.
-
-Ambas:
-
-* utilizam palavras de 8 bits;
-* possuem 256 níveis;
-* resultam em uma taxa de 64 kbps;
-* dividem a faixa dinâmica em 16 segmentos;
-* utilizam quantização uniforme dentro de cada segmento.
-
-##### Diferenças
-
-| Característica                      | A-law                   | μ-law                             |
-| ----------------------------------- | ----------------------- | --------------------------------- |
-| Parâmetro                           | A = 87,7                | μ = 255                           |
-| Utilização apresentada              | Europa e resto do mundo | América do Norte e Japão          |
-| Faixa dinâmica                      | Maior                   | —                                 |
-| Desempenho em sinais de baixo nível | —                       | Melhor desempenho sinal/distorção |
-
-O material também apresenta diferenças na atribuição dos bits e nas aproximações utilizadas pelas duas técnicas.
+* **Compressão**, realizada na origem, ntes de o sinal analógico ser convertido em digital, ele passa por um circuito ou algoritmo que comprime a faixa dinâmica.  Dessa forma, os sons de baixa intensidade são amplificados, enquanto os sons de alta intensidade são atenuados ou mantidos estáveis.;
+* **Expansão**, realizada no destino, após receber o sinal digitalizado e convertê-lo de volta para o analógico, o receptor faz o processo inverso,aplica uma expansão matemática para restaurar os volumes originais do sinal.
 
 ---
 
@@ -348,7 +301,7 @@ Uma limitação apresentada é que a quantização uniforme da diferença pode r
 
 ### 9. ADPCM
 
-O **ADPCM (Adaptive Differential Pulse Code Modulation)**, definido no padrão **ITU-T G.726**, utiliza adaptação dos níveis de quantização de acordo com o tamanho do sinal de diferença.
+O ADPCM (Adaptive Differential Pulse Code Modulation), definido no padrão **ITU-T G.726**, utiliza adaptação dos níveis de quantização de acordo com o tamanho do sinal de diferença.
 
 O material apresenta como características:
 
