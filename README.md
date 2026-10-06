@@ -449,7 +449,7 @@ Algumas métricas utilizadas para avaliar sistemas de comunicação são:
 | **SNR**                 | Relação sinal-ruído                                          |
 | **Capacidade do canal** | Quantidade de informação que pode ser transmitida pelo canal |
 
-A capacidade do canal está relacionada ao **teorema de Shannon-Hartley**.
+
 
 ---
 
@@ -479,4 +479,7 @@ Informação recuperada
 ---
 
 
-
+## Primeiro Metódo ##
+Um conversor analógico digital (ADC) é utilizado para medir um sinal do mundo real(meio físico), e transforma-lo em uma representação digital do sinal. O conversor compara amostras da tensão de entrada do meio analógio(através dos sons) para uma tensão de referência conhecida pelo conversor, e em seguida, reproduz uma representação digital (em binário) dessa entrada analógica. 
+O ADC produz o error de quantização, que consiste na diferença entre o sinal analógico real e o valor digital que o conversor consegue representar, uma vez que o conversor precisa "arrendondar" o valor real para o nível dital mais próximo, e a diferença é perdida e serve como um ruído. Esse erro ocorre porque no meio físico há infinitos números de tensões para um sinal analógico, enquanto para para os códigos digitais há um número finito(0s e 1s).
+Nessa conversão, o princípio de Nyquist afirma a que as amostras devem ser no mínimo o dobro da largura de banda máxima do sinal analógico que está sendo convertida, a fim de que o sinal seja reproduzido com precisão. A taxa de amostragem é o número de amostras colhidas por segundo, as unidades para a taxa de amostragem são amostras por segundo (sps) ou Hertz (Hz). Taxas de amostragem mais altas normalmente vêm ao custo de velocidades mais lentas e maior consumo de energia.
