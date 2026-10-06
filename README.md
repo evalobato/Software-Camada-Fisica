@@ -319,23 +319,10 @@ Na telefonia, são utilizadas:
 ```
 ---
 
-### 5. Modulação do pulso 
+### 5. Processamento e Digitalização de Sinais
 
-A modulação altera determinadas características de uma onda ou portadora para representar informações.
+Na camada física a digitalização pe o primeiro passo para se ter acesso aos sinais analógicos, pelo metódo de modulação de pulso que separa o sinal analógico em formas que podem ser entendidas pelos componentes discretos nos formatos de 0s e 1s.
 
-**Modulação digital**
-
-* **ASK (Amplitude Shift Keying):** utiliza variações de amplitude;
-* **PSK (Phase Shift Keying):** utiliza variações de fase;
-* **QAM (Quadrature Amplitude Modulation):** utiliza variações de amplitude e fase.
-
-A ordem da modulação determina quantos bits por símbolo podem ser transmitidos.
-
-**Modulação de pulso**
-
-* **PAM:** modula a amplitude de um trem de pulsos;
-* **PCM:** transforma cada amostra em uma palavra binária;
-* **Quantização:** transforma amplitudes contínuas em valores discretos.
 
 ---
 
@@ -356,23 +343,26 @@ Valor discreto
       ↓
  Código binário
 ```
-
+PCM é o processo completo que executa os passos acima, transformando cada amostra final do sinal em uma palavra binária está
 ---
 
-### 7. Companding
+### 6. Otimizações de Banda e Codificação de Fonte
 
-Companding é formado pela combinação de:
+Após gerar os bits iniciais, a Camada Física aplica técnicas para reduzir a taxa de transmissão necessária (bits por segundo), driblando as limitações de capacidade física do meio e diminuindo o ruído de quantização.
+---
+
+#### Companding
+A otimização logarítmica da faixa dinânmica, combate o ruído de quantização alterando para o formato não uniforme. Sendi formada pela junção das palavras:
 
 * **Compressão**, realizada na origem, ntes de o sinal analógico ser convertido em digital, ele passa por um circuito ou algoritmo que comprime a faixa dinâmica.  Dessa forma, os sons de baixa intensidade são amplificados, enquanto os sons de alta intensidade são atenuados ou mantidos estáveis.;
 * **Expansão**, realizada no destino, após receber o sinal digitalizado e convertê-lo de volta para o analógico, o receptor faz o processo inverso,aplica uma expansão matemática para restaurar os volumes originais do sinal.
 
 ---
 
-### 8. DPCM
+#### DPCM
 
-O **DPCM (Differential Pulse Code Modulation)** funciona de maneira semelhante ao PCM, porém transmite a diferença entre a amostra atual e a amostra anterior, em vez de transmitir a amostra completa.
+O DPCM (Otimização por Diferencial Físico) funciona de maneira semelhante ao PCM, porém transmite a diferença entre a amostra atual e a amostra anterior, em vez de transmitir a amostra completa.
 
-#### Funcionamento
 
 ```text
 Amostra atual
@@ -386,49 +376,39 @@ Amostra atual
  Transmissão
 ```
 
-O sistema utiliza um **preditor**, que mantém uma amostra, e um **diferenciador**, responsável pelo cálculo da diferença.
-
-O DPCM pode reduzir a taxa para até **48 kbps**.
-
-Uma limitação apresentada é que a quantização uniforme da diferença pode resultar em qualidade diferente para sinais de diferentes amplitudes.
+O sistema utiliza um preditor, que mantém uma amostra, e um diferenciador, responsável pelo cálculo da diferença. O DPCM pode reduzir a taxa para até 48 kbps. Uma limitação apresentada é que a quantização uniforme da diferença pode resultar em qualidade diferente para sinais de diferentes amplitudes.
 
 ---
 
-### 9. ADPCM
+#### ADPCM
 
-O ADPCM (Adaptive Differential Pulse Code Modulation), definido no padrão **ITU-T G.726**, utiliza adaptação dos níveis de quantização de acordo com o tamanho do sinal de diferença.
-
-O material apresenta como características:
-
-* redução da taxa para **32 kbps**;
-* utilização de realimentação;
-* adaptação do quantizador;
-* geração de SNR uniforme ao longo da faixa dinâmica.
-
-#### Passos para 32 kbps
-
-1. Converter a amostra PCM A-law/μ-law para PCM linear.
-2. Calcular o valor previsto da próxima amostra.
-3. Calcular a diferença entre a amostra real e a prevista.
-4. Codificar a diferença em 4 bits.
-5. Enviar os 4 bits ao preditor.
-6. Enviar os 4 bits ao quantizador.
+O ADPCM (Otimização por Diferencial Adaptativo), definido no padrão ITU-T G.726,, utiliza adaptação dos níveis de quantização de acordo com o tamanho do sinal de diferença. Apresenta redução da taxa para 23 kbps e possui adaptação do quantizador em tempo real.
 
 ---
+### 7. Modulação Digital e Transmissão no Meio Físico
+Após a otimização dos bits, a camada física deve alterar as características de uma onda pafa representar fisicamente esses bits no meio de transmissão.
 
-### 10. Ruído
+#### Modulação em Banda Base
+* **PAM**: Modula a amplitude de um trem de pulsos elétricos puros, serve de base para tecnologias de cabo.
 
-O **ruído** é qualquer interferência que prejudique a representação ou recuperação do sinal transmitido.
+#### Modulação em Banda Passante
+Utilizada em canais de rádio, cabos coaxiais, ou fibra ópticas através de alterações em ondas senoidais:
+* **ASK**: Utiliza variações de amplitude da onda portadora.
+* **PSK**: Utiliza variações de fase da onda portadora.
+* **QAM**: Utiliza variações combinadas de amplitude e fase simultaneamente.
+
+---
+### 8. Ruído
+
+O ruído é qualquer interferência que prejudique a representação ou recuperação do sinal transmitido.
 
 #### Ruído de quantização
 
-O **ruído de quantização** surge devido à diferença entre o valor real da amostra e o intervalo de quantização ao qual ela foi associada.
-
-Quanto maior esse ruído, maior a degradação da qualidade do sinal.
+O ruído de quantização surge devido à diferença entre o valor real da amostra e o intervalo de quantização ao qual ela foi associada. Quanto maior esse ruído, maior a degradação da qualidade do sinal.
 
 #### SNR — Relação sinal-ruído
 
-A **SNR (Signal-to-Noise Ratio)** representa a relação entre a intensidade do sinal e a intensidade do ruído.
+A SNR (Signal-to-Noise Ratio) representa a relação entre a intensidade do sinal e a intensidade do ruído.
 
 A fórmula apresentada é:
 
@@ -441,31 +421,25 @@ Onde:
 * `Vs` = tensão do sinal;
 * `Vn` = tensão do ruído.
 
-A SNR normalmente é expressa em **decibéis (dB)**. Quanto maior a SNR, melhor a qualidade do sinal de voz.
+A SNR normalmente é expressa em decibéis (dB). Quanto maior a SNR, melhor a qualidade do sinal de voz.
 
 #### Quantização uniforme
 
-Na quantização uniforme, os intervalos possuem o mesmo tamanho em toda a faixa dinâmica.
-
-Isso produz uma SNR menor para sinais fracos e maior para sinais fortes. Como grande parte da voz apresenta níveis baixos, essa característica pode ser ineficiente.
+Na quantização uniforme, os intervalos possuem o mesmo tamanho em toda a faixa dinâmica. Isso produz uma SNR menor para sinais fracos e maior para sinais fortes. Como grande parte da voz apresenta níveis baixos, essa característica pode ser ineficiente.
 
 #### Companding como solução
 
-O **companding** utiliza compressão logarítmica para fazer o ruído de quantização acompanhar o nível do sinal, mantendo uma SNR mais uniforme na faixa dinâmica.
+O companding utiliza compressão logarítmica para fazer o ruído de quantização acompanhar o nível do sinal, mantendo uma SNR mais uniforme na faixa dinâmica.
 
 ---
 
-### 11. Ruído e meio físico
+### 9. Ruído e meio físico
 
-O meio físico utilizado na comunicação impõe limitações relacionadas à **atenuação** e ao **ruído**.
-
-No caso de sinais analógicos, o enfraquecimento do sinal torna mais difícil separá-lo do ruído, e a amplificação também amplifica o ruído.
-
-O aliasing também pode ser considerado um problema relacionado ao processo de transmissão e conversão, ocorrendo quando a taxa de amostragem é inadequada.
+O meio físico utilizado na comunicação impõe limitações relacionadas à atenuação e ao ruído. No caso de sinais analógicos, o enfraquecimento do sinal torna mais difícil separá-lo do ruído, e a amplificação também amplifica o ruído. O aliasing também pode ser considerado um problema relacionado ao processo de transmissão e conversão, ocorrendo quando a taxa de amostragem é inadequada.
 
 ---
 
-### 12. Métricas de desempenho
+### 10. Métricas de desempenho
 
 Algumas métricas utilizadas para avaliar sistemas de comunicação são:
 
@@ -479,7 +453,7 @@ A capacidade do canal está relacionada ao **teorema de Shannon-Hartley**.
 
 ---
 
-### 13. Resumo
+### 11. Resumo
 
 A **Camada Física** é responsável pela transmissão dos bits através de um meio físico. Para isso, envolve características como sinalização, codificação, modulação, largura de banda, amostragem, quantização e controle dos efeitos do ruído.
 
