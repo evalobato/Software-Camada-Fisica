@@ -9,6 +9,8 @@ Pausas (silêncio depois da última batida):
   longa   (>= silencio_palavra_s) fecha a palavra (espaço)
 """
 
+import unicodedata
+
 MORSE = {
     ".-": "A", "-...": "B", "-.-.": "C", "-..": "D", ".": "E", "..-.": "F",
     "--.": "G", "....": "H", "..": "I", ".---": "J", "-.-": "K", ".-..": "L",
@@ -20,6 +22,30 @@ MORSE = {
     ".-.-.-": ".", "--..--": ",", "..--..": "?", "-.-.--": "!", "-....-": "-",
     "-..-.": "/",
 }
+
+CODIGO_DE_CARACTERE = {letra: codigo for codigo, letra in MORSE.items()}
+
+
+def texto_para_morse(texto):
+    """Texto -> (palavras, ignorados).
+
+    palavras: lista de palavras; cada palavra é uma lista de códigos Morse, um por letra.
+    ignorados: caracteres que não existem na tabela (ficam fora da mensagem).
+    Maiúsculas e acentos não importam ("Olá" vira "OLA").
+    """
+    sem_acento = unicodedata.normalize("NFKD", texto)
+    sem_acento = "".join(c for c in sem_acento if not unicodedata.combining(c)).upper()
+    palavras, ignorados = [], []
+    for palavra in sem_acento.split():
+        codigos = []
+        for c in palavra:
+            if c in CODIGO_DE_CARACTERE:
+                codigos.append(CODIGO_DE_CARACTERE[c])
+            else:
+                ignorados.append(c)
+        if codigos:
+            palavras.append(codigos)
+    return palavras, ignorados
 
 
 class DecodificadorMorse:
