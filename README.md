@@ -453,30 +453,6 @@ Algumas métricas utilizadas para avaliar sistemas de comunicação são:
 
 ---
 
-### 11. Resumo
-
-A Camada Física é responsável pela transmissão dos bits através de um meio físico. Para isso, envolve características como sinalização, codificação, modulação, largura de banda, amostragem, quantização e controle dos efeitos do ruído.
-
-O processo de comunicação pode ser representado de forma simplificada:
-
-```text
-Informação
-    ↓
-Codificação
-    ↓
-Modulação / Sinalização
-    ↓
-Meio físico
-    ↓
-Ruído e atenuação
-    ↓
-Recepção
-    ↓
-Demodulação / Decodificação
-    ↓
-Informação recuperada
-```
----
 
 
 ## Primeiro Método ##
