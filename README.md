@@ -406,7 +406,7 @@ O ruído é qualquer interferência que prejudique a representação ou recupera
 
 O ruído de quantização surge devido à diferença entre o valor real da amostra e o intervalo de quantização ao qual ela foi associada. Quanto maior esse ruído, maior a degradação da qualidade do sinal.
 
-#### SNR — Relação sinal-ruído
+#### SNR — Relação sinal-ruído 
 
 A SNR (Signal-to-Noise Ratio) representa a relação entre a intensidade do sinal e a intensidade do ruído.
 
@@ -439,18 +439,9 @@ O meio físico utilizado na comunicação impõe limitações relacionadas à at
 
 ---
 
-### 10. Métricas de desempenho
-
-Algumas métricas utilizadas para avaliar sistemas de comunicação são:
-
-| Métrica                 | Significado                                                  |
-| ----------------------- | ------------------------------------------------------------ |
-| **BER**                 | Taxa de erro de bit                                          |
-| **SNR**                 | Relação sinal-ruído                                          |
-| **Capacidade do canal** | Quantidade de informação que pode ser transmitida pelo canal |
 
 
-## Primeiro Método ##
+## Primeiro Método 
 
 Um conversor analógico digital (ADC) é utilizado para medir um sinal do mundo real(meio físico), e transforma-lo em uma representação digital do sinal. O conversor compara amostras da tensão de entrada do meio analógio(através dos sons) para uma tensão de referência conhecida pelo conversor, e em seguida, reproduz uma representação digital (em binário) dessa entrada analógica. 
 
@@ -459,7 +450,7 @@ O ADC produz o error de quantização, que consiste na diferença entre o sinal 
 Nessa conversão, o princípio de Nyquist afirma a que as amostras devem ser no mínimo o dobro da largura de banda máxima do sinal analógico que está sendo convertida, a fim de que o sinal seja reproduzido com precisão. A taxa de amostragem é o número de amostras colhidas por segundo, as unidades para a taxa de amostragem são amostras por segundo (sps) ou Hertz (Hz). Taxas de amostragem mais altas normalmente vêm ao custo de velocidades mais lentas e maior consumo de energia.
 
 
-## Segundo Método - Código Morse ##
+## Segundo Método - Código Morse 
 
 O código morse é uma forma de comunição que ainda é muito utilizado entre os usuários de rádio amador por causa de suas vantagens únicas, é composto por pontos, traços e espaços que representam letras, números e sinais de pontuação aplamente utilizado por governos e militares. Esse sistema permite a transmissão de mensagens à distância, por fio ou rádio, através de sons de longa e curta duração.
 
