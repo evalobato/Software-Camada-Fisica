@@ -489,8 +489,30 @@ Nessa conversão, o princípio de Nyquist afirma a que as amostras devem ser no 
 
 ## Segundo Metódo - Código Morse##
 
-O código morse é uma forma de comunição que ainda é muito utilizado entre os usuários de rádio amador por causa de suas vantagens únicas 
+O código morse é uma forma de comunição que ainda é muito utilizado entre os usuários de rádio amador por causa de suas vantagens únicas, é composto por pontos, traços e espaços que representam letras, números e sinais de pontuação aplamente utilizado por governos e militares. Esse sistema permite a transmissão de mensagens à distância, por fio ou rádio, através de sons de longa e curta duração.
 
+O processo pode ser representado da seguinte forma:
+
+```text
+Som / voz
+   ↓
+Microfone
+   ↓
+Sinal elétrico
+   ↓
+Processamento / interpretação do som
+   ↓
+Texto ou caractere identificado
+   ↓
+Codificação Morse
+   ↓
+Pontos (·) e traços (−)
+   ↓
+Sinal físico
+   ↓
+Transmissão
+```
+Na transmissão, esses pontso e traços são convertidos em sinais físicos que podem ser transformados pelo meio de comunicação. Na pespectiva da Camada Física, o ponto de mais importância é a transformação dos símbolos do código morse  em sinais capazes de atravessar um meio de trasmissão. O receptor realiza realiza o inverso, identificando o sinal recebido e juntando os pontos e traços para recuperar a mensagem original.
 
 ## Explicação dos códigos utilizado nos métodos ###
 
