@@ -308,16 +308,6 @@ Fs < 2 × BW
 
 Nesse caso, ocorre sobreposição entre os componentes espectrais das amostras e do sinal de entrada. O resultado pode ser um sinal falso, que não corresponde ao sinal original.
 
-##### Exemplo: telefonia
-
-Na telefonia, são utilizadas:
-
-```text
-8.000 amostras/s × 8 bits
-= 64.000 bits/s
-= 64 kbps
-```
----
 
 ### 5. Processamento e Digitalização de Sinais
 
@@ -393,6 +383,7 @@ Após a otimização dos bits, a camada física deve alterar as características
 
 #### Modulação em Banda Passante
 Utilizada em canais de rádio, cabos coaxiais, ou fibra ópticas através de alterações em ondas senoidais:
+
 * **ASK**: Utiliza variações de amplitude da onda portadora.
 * **PSK**: Utiliza variações de fase da onda portadora.
 * **QAM**: Utiliza variações combinadas de amplitude e fase simultaneamente.
@@ -440,7 +431,14 @@ O meio físico utilizado na comunicação impõe limitações relacionadas à at
 ---
 
 
+## Detecção de erros
+### Paridade Par
+Os bits de paridade desempenham um papel importante detecção de erros nas trasmissões de dados, é um método relativamente simples, que ajuda a identificar a integridade dos dados à medida que se movem de um lugar para o outro, ao adicionar um nono bit à sequência de bits de dados. Se o valor do bit de paridade não corresponder à paridade esperada, isso sinalizará um erro à determinada sequência.
 
+Os bits de paridade não são responsaveis por resolver os erros encontrados, apens indicam sua presença. São importantes pois no meio da comunicação digital, mesmo os erros pequenos podem levar a grandes problemas, essa detecção é particularmente importante para dados trasnmitidos à loga distância e meio sem fio.
+
+#### Paridade uniforme explicada
+### Detecção de erro no segundo método
 ## Primeiro Método 
 
 Um conversor analógico digital (ADC) é utilizado para medir um sinal do mundo real(meio físico), e transforma-lo em uma representação digital do sinal. O conversor compara amostras da tensão de entrada do meio analógio(através dos sons) para uma tensão de referência conhecida pelo conversor, e em seguida, reproduz uma representação digital (em binário) dessa entrada analógica. 
