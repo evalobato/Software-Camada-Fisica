@@ -487,7 +487,7 @@ No arquivo *decodificador_morse*, o sistema interpreta a quantidade de batidas c
 * **1 batida: ponto( . )**;
 * **2 batitas: traço( -- )**;
 
-Mais de das batidas não são lidas pelo sistema e são identificadas como um erro; porém esse meio de detecção de erros não é totalmente eficiênte, pois detecta determinadas entradas inválidas, mas não consegue identificar todos os erros posíveis.
+Mais de duas batidas não são lidas pelo sistema e são identificadas como um erro; porém esse meio de detecção de erros não é totalmente eficiênte, pois consegue filtrar determinadas entradas inválidas, mas não consegue identificar todos os erros posíveis.
 
 
 ## Explicação dos códigos utilizado nos métodos 
