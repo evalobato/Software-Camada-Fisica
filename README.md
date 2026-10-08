@@ -478,7 +478,7 @@ Os bits de paridade desempenham um papel importante detecção de erros nas tras
 
 Os bits de paridade não são responsaveis por resolver os erros encontrados, apens indicam sua presença. São importantes pois no meio da comunicação digital, mesmo os erros pequenos podem levar a grandes problemas, essa detecção é particularmente importante para dados trasnmitidos à loga distância e meio sem fio.
 
-### Detecção de erro no segundo método
+### Detecção de erro mo código morse
 A detecção de erros em código morse tradicionalmente não utiliza mecanismos formais, como paridadem checksun ou CRC. A identificação de erros se dá pela detecção de batitas por limiar de energia RMS (raiz quadrática média), é uma medida estátistica que quantifica a magnitude de um sinal váriavel. Amplamente utilizado na navegação inercial(clacula a velocidade, posição e orientação de objetos a partir de sensores), para descrever descrever o ruído do sensor, a instabilidade e qualidade geral das medições inerciais. O RMS expressa a potência efetiva de um sinal extraindo a média dos valores quadrados.
 
 No arquivo *detector_batidas*, a função *calcular_rms()* é utilizada para calcular o nível de energia reproduxido em cada bloco de áudio, dessa forma identica se foi detectado uma batida. O primeiro passo da execução se da por meio da calibraçãi do ruído ambiente, e em seguida estabelece um limiar mínimo de detecção do ruído, se o som produzido for aleḿ desse limiar, o progrma reconhce como uma batida que será processada.
