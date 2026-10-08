@@ -1,3 +1,6 @@
+[![Assista no YouTube](https://www.youtube.com/watch?v=SI557n0paVI)](https://www.youtube.com/watch?v=SI557n0paVI)
+
+
 # Rodar em outro computador (Windows, Linux ou macOS)
 
 O mesmo código roda nos três sistemas. Um computador toca (emite) e o outro escuta (recebe)
@@ -439,6 +442,9 @@ Os bits de paridade não são responsaveis por resolver os erros encontrados, ap
 
 #### Paridade uniforme explicada
 ### Detecção de erro no segundo método
+A detecção de erros em código morse tradicionalmente não utiliza mecanismos formais, como paridadem checksun ou CRC. A identificação de erros se dá pela detecção de batitas por limiar de energia RMS (raiz quadrática média), é uma medida estátistica que quantifica a magnitude de um sinal váriavel. Amplamente utilizado na navegação inercial(clacula a velocidade, posição e orientação de objetos a partir de sensores), para descrever descrever o ruído do sensor, a instabilidade e qualidade geral das medições inerciais. O RMS expressa a potência efetiva de um sinal extraindo a média dos valores quadrados.
+
+No arquivo *detector_batidas*, a função *calcular_rms()* é utilizada para calcular o nível de energia reproduxido em cada bloco de áudio, dessa forma identica se foi detectado uma batida. O primeiro passo da execução se da por meio da calibraçãi do ruído ambiente, e em seguida estabelece um limiar mínimo de detecção do ruído, se o som produzido for aleḿ desse limiar, o progrma reconhce como uma batida que será processada.
 ## Primeiro Método 
 
 Um conversor analógico digital (ADC) é utilizado para medir um sinal do mundo real(meio físico), e transforma-lo em uma representação digital do sinal. O conversor compara amostras da tensão de entrada do meio analógio(através dos sons) para uma tensão de referência conhecida pelo conversor, e em seguida, reproduz uma representação digital (em binário) dessa entrada analógica. 
