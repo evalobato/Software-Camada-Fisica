@@ -1,4 +1,4 @@
-[![Assista no YouTube](https://www.youtube.com/watch?v=SI557n0paVI)](https://www.youtube.com/watch?v=SI557n0paVI)
+[![Apresentação de Redes](https://img.youtube.com/vi/SI557n0paVI/0.jpg)](https://www.youtube.com/watch?v=SI557n0paVI)
 
 
 # Rodar em outro computador (Windows, Linux ou macOS)
