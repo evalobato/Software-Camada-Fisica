@@ -467,7 +467,7 @@ O código morse é uma forma de comunição que ainda é muito utilizado entre o
 
 
 
-![**Tabela Código Morse**](src/codigo_morse/assets/images.jpeg)
+![Tabela Código Morse](src/codigo_morse/assets/images.jpeg)
 
 O processo pode ser representado da seguinte forma:
 
