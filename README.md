@@ -441,6 +441,58 @@ O ADC produz o error de quantização, que consiste na diferença entre o sinal 
 
 Nessa conversão, o princípio de Nyquist afirma a que as amostras devem ser no mínimo o dobro da largura de banda máxima do sinal analógico que está sendo convertida, a fim de que o sinal seja reproduzido com precisão. A taxa de amostragem é o número de amostras colhidas por segundo, as unidades para a taxa de amostragem são amostras por segundo (sps) ou Hertz (Hz). Taxas de amostragem mais altas normalmente vêm ao custo de velocidades mais lentas e maior consumo de energia.
 
+### Explicação dos Arquivos do Código Morse
+
+O programa está separdo por arquivos que possuem diferentes funcionalidades, que juntos podem captar batidas pelo microfone, identificar se os sons recebidos são pontos ou traços, converter os sinais em letras e palavras e emitir batidas em áudio para outros computadores.
+
+#### Arquivo detector_batidas
+
+Sua responsabilidade é apenas detectar um evento sonoro, a biblioteca *numpy* realiza cálculos com as amotras detectadas.
+
+**Função calcular_rms(bloco)**
+
+Calcula o RMS,fornece a medida da intensidade do sinal sonor, de um bloco de áudio. E retorna por *np.sqr*, *np.mean*, *np.square* o quadrado, a média e a raiz quadrada da média das amostras recebidas, quanto maior o resultado maior a intensidade do som.
+
+**Classe DetectorDeBatidas**
+
+Responsável pela calibração e detecção de batidas, a partir dos parâmentros necessários:
+
+* taxa_amostragem: throughput das amostras;
+* tamanho_bloco: quantidade de amostras analisadas em cada bloco;
+bloco;
+* blocos_calibracao: quantidade de blocos utilizados para medir o ruído inicial;
+* multiplicador_ruido: determina o limiar em relação ao ruído;
+* limiar_minimo: valor mínimo que deve ser alcançado para uma detecção;
+* intervalo_minimo: tempo mínimo entre duas detecções válidas;
+* tambem incializa tempo decorrido, nível de áudio e estado de detecção;
+
+**Método processar_bloco(self, bloco)**
+
+Recebe um bloco de áudio e retorna *True* quando uma batida é validade, e *False* quando contrário.
+
+* 1. Calibração do ruído ambiente;
+* 2. Detecção pela borda de saída;
+* 3. Controle do tempo mínimo entre as detecções;
+
+### Arquivo decodificador_bits
+È responsável por transformar um grupo de batidas em bits, usando a quantidade de sons válidos e o tempo de intervalo entre eles.
+
+* silêncio, 1 batida,  silêncio -> 0;
+* silêncio, 2 batidas, silêncio -> 1
+
+**Classe DecodificadorDeBits**
+
+Reúne dados e funções relacionadas e guarda as informações necessárias para processar as batidas, medir o intervalo e identificar o bit.
+
+**Método reiniciar()**
+
+Descarta um grupo de batidas que ainda estava sendo contado.
+
+**Método processar_bloco(batidas)**
+
+Recebe a informação sobre um bloco de áudio e decide se deve encerrar ou não a captação de um grupo.
+
+
 
 ## Segundo Método - Código Morse 
 
