@@ -471,6 +471,8 @@ Transmissão
 ```
 Na transmissão, esses pontos e traços são convertidos em sinais físicos que podem ser transformados pelo meio de comunicação. Na pespectiva da Camada Física, o ponto de mais importância é a transformação dos símbolos do código morse  em sinais capazes de atravessar um meio de trasmissão. O receptor realiza realiza o inverso, identificando o sinal recebido e juntando os pontos e traços para recuperar a mensagem original.
 
+### Explicação dos Arquivos do Código Morse
+O programa está separdo por arquivos que possuem diferentes funcionalidades, que juntos podem captar batidas pelo microfone, identificar se os sons recebidos são pontos ou traços, converter os sinais em letras e palavras e emitir batidas em áudio para outros computadores.
 ## Detecção de erros
 
 ### Paridade Par
