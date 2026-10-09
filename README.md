@@ -473,6 +473,36 @@ Na transmissão, esses pontos e traços são convertidos em sinais físicos que 
 
 ### Explicação dos Arquivos do Código Morse
 O programa está separdo por arquivos que possuem diferentes funcionalidades, que juntos podem captar batidas pelo microfone, identificar se os sons recebidos são pontos ou traços, converter os sinais em letras e palavras e emitir batidas em áudio para outros computadores.
+
+#### Arquivo *decodificador_morse*
+**Código Caractere** 
+
+* Permite que a criação de um dicionário que contém uma tabela de morse para os símbolos e que faz o caminho inverso também.
+
+**Função ***texto_para_morse*
+
+* Remove acetuação das palavras;
+* Converte as letras para maiúsculas;
+* Identifica espaços no texto;
+* Converte os caracteres;
+* Identifica os caracteres que não estão na lista, e não serã convertidos;
+
+**Clase *DecodificadorMorse***
+È responsável por configuara os tempos usados no processamento
+* *duração_bloco*: duração de cada bloco de aúdio;
+* *silencio_simbolo_s*: silêncio necessaŕio para satisfazer a um ponto ou traço;
+* *silencio_letra_s*: silêncio necessário para fechar uma letra;
+
+**Método *reiniciar***
+Descarta tudo o que estava sendo montado , icluindo as batidas, tempo de silêncio, o código, indicação de símbolo inválido e o controle de separação entre as palavras. Permite que uma nova mensagem seja reeniciada sem interferência da gerada anteriormente.
+
+**Método *processar_bloco***
+Capta o resultado da detecção de áudio e decide o significado das batidas.
+
+* 1. Conta as batidas;
+* 2. Indetifica se é ponto ou traço;
+* 3. Finaliza letra;
+* 4. Identifica o espaço;
 ## Detecção de erros
 
 ### Paridade Par
