@@ -503,6 +503,32 @@ Capta o resultado da detecção de áudio e decide o significado das batidas.
 * 2. Indetifica se é ponto ou traço;
 * 3. Finaliza letra;
 * 4. Identifica o espaço;
+
+#### Arquivo detector_batidas
+Sua responsabilidade é apenas detectar um evento sonoro, a biblioteca *numpy* realiza cálculos com as amotras detectadas.
+
+**Função calcular_rms(bloco)**
+
+Calcula o RMS,fornece a medida da intensidade do sinal sonor, de um bloco de áudio. E retorna por *np.sqr*, *np.mean*, *np.square* o quadrado, a média e a raiz quadrada da média das amostras recebidas, quanto maior o resultado maior a intensidade do som.
+
+**Classe DetectorDeBatidas**
+Responsável pela calibração e detecção de batidas, a partir dos parâmentros necessários:
+
+* taxa_amostragem: throughput das amostras;
+* tamanho_bloco: quantidade de amostras analisadas em cada bloco;
+bloco;
+* blocos_calibracao: quantidade de blocos utilizados para medir o ruído inicial;
+* multiplicador_ruido: determina o limiar em relação ao ruído;
+* limiar_minimo: valor mínimo que deve ser alcançado para uma detecção;
+* intervalo_minimo: tempo mínimo entre duas detecções válidas;
+* tambem incializa tempo decorrido, nível de áudio e estado de detecção;
+
+**Método processar_bloco(self, bloco)**
+Recebe um bloco de áudio e retorna *True* quando uma batida é validade, e *False* quando contrário.
+
+* 1. Calibração do ruído ambiente;
+* 2. Detecção pela borda de saída;
+* 3. Controle do tempo mínimo entre as detecções;
 ## Detecção de erros
 
 ### Paridade Par
