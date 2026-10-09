@@ -492,7 +492,41 @@ Descarta um grupo de batidas que ainda estava sendo contado.
 
 Recebe a informação sobre um bloco de áudio e decide se deve encerrar ou não a captação de um grupo.
 
+### Arquivo paridade
 
+**Função bit_paridade()**
+
+Recebe uma lista com os bits de dados e calcula qual bit deve ser acrescentado para que a quantidade toal de 1 seja par.
+
+**Função montar_quadro(dados)**
+
+Essa função prepara um quadro para transmissão.
+Ela realiza três operações:
+* 1. Confere se a lista contém exatamente 8 bits.
+* 2. Se a quantidade estiver incorreta, lança um erro ValueError.
+* 3. Acrescenta o bit de paridade ao final da lista e retorna o quadro de 9 bits.
+
+**Função quadro_valido(quadro)**
+
+Verifica se um quadro recebido atende à regra de paridade par. Utiliza o operador and, que exige que as duas condições sejam verdadeiras:
+* *len(quadro)* == BITS_POR_QUADRO: o quadro precisa conter 9 bits.
+* *sum(quadro)* % 2 == 0: a quantidade de bits 1 precisa ser par
+
+**Função dados_para_texto(dados)**
+
+Reponsável por converter uma lista de 8 bits em um valor numérico e, quando possível, em um caractere imprimível.
+
+**Função analisar_ultimo(bits)**
+
+Usada para acompanhar a posição do bit mais recente em uma sequência que está sendo recebida. Devolve um dicionário com informações sobre o bit atual, incluindo sua posição no quadro, se ele é o bit de paridade e se um quadro acabou de ser concluído.
+
+**Função quadros_de_bits_digitados(texto)**
+
+Essa função permite que o usuário digite diretamente uma sequência binária, em vez de escrever uma mensagem em texto.
+
+**Função texto_dos_quadros_ok(bits)**
+
+Recebe uma sequência de bits com quadros de paridade e reconstrói o texto utilizando somente os quadros considerados válidos.
 
 ## Segundo Método - Código Morse 
 
