@@ -534,7 +534,22 @@ Recebe um bloco de áudio e retorna *True* quando uma batida é validade, e *Fal
 #### Arquivo receptor_morse
 Funciona como suporte para programas de recepção e permissão de sinais de áudio.
 
-**Função configurar_saida**
+**Função callback_audio()**
+È chamada pela biblioteca *sounddevice* sempre que um novo bloco de áudio está disponível, e organiza em uma fileira para ser processado posteriormente.
+
+**Função ler_teclado**
+Durante a recepção de áudio, o ENTER apaga a mensagem e o decodificador é reeniciado. Depois do encerramento da recepção o texto digitado é enviado à fila de comandos para ser interpretado.
+
+**Função montar_som**
+Converte as frequências e duraçĩes recebidas em amotras válidas de áudio.
+
+**Função plano_de_emissão**
+Recebe a mensagem já convertida para Morse e monta um sequência de itens que informa os símbolos, tempo de espera antes dele, qual letra ele pertence e se incia uma letra ou palavra. Assim como diferencia pausa entre símbolos, letras e palavras.
+
+**Função emitir()**
+
+Utilizada para transmitir uma mensagem em morse, preparando ações que mostram no terminal a letra e o códogo em morse, chama *plataforma.montar_roteiro* para montar a onda sonora completa, e chama *plataforma.tocar_com_marcos* para reproduzir um som.
+
 
 ## Detecção de erros
 
