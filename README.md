@@ -479,7 +479,7 @@ O programa está separdo por arquivos que possuem diferentes funcionalidades, qu
 
 * Permite que a criação de um dicionário que contém uma tabela de morse para os símbolos e que faz o caminho inverso também.
 
-**Função ***texto_para_morse*
+**Função texto_para_morse**
 
 * Remove acetuação das palavras;
 * Converte as letras para maiúsculas;
@@ -487,16 +487,16 @@ O programa está separdo por arquivos que possuem diferentes funcionalidades, qu
 * Converte os caracteres;
 * Identifica os caracteres que não estão na lista, e não serã convertidos;
 
-**Clase *DecodificadorMorse***
+**Clase DecodificadorMorse**
 È responsável por configuara os tempos usados no processamento
 * *duração_bloco*: duração de cada bloco de aúdio;
 * *silencio_simbolo_s*: silêncio necessaŕio para satisfazer a um ponto ou traço;
 * *silencio_letra_s*: silêncio necessário para fechar uma letra;
 
-**Método *reiniciar***
+**Método reiniciar**
 Descarta tudo o que estava sendo montado , icluindo as batidas, tempo de silêncio, o código, indicação de símbolo inválido e o controle de separação entre as palavras. Permite que uma nova mensagem seja reeniciada sem interferência da gerada anteriormente.
 
-**Método *processar_bloco***
+**Método processar_bloco**
 Capta o resultado da detecção de áudio e decide o significado das batidas.
 
 * 1. Conta as batidas;
