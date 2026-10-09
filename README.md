@@ -505,6 +505,7 @@ Capta o resultado da detecção de áudio e decide o significado das batidas.
 * 4. Identifica o espaço;
 
 #### Arquivo detector_batidas
+
 Sua responsabilidade é apenas detectar um evento sonoro, a biblioteca *numpy* realiza cálculos com as amotras detectadas.
 
 **Função calcular_rms(bloco)**
@@ -529,6 +530,12 @@ Recebe um bloco de áudio e retorna *True* quando uma batida é validade, e *Fal
 * 1. Calibração do ruído ambiente;
 * 2. Detecção pela borda de saída;
 * 3. Controle do tempo mínimo entre as detecções;
+
+#### Arquivo receptor_morse
+Funciona como suporte para programas de recepção e permissão de sinais de áudio.
+
+**Função configurar_saida**
+
 ## Detecção de erros
 
 ### Paridade Par
