@@ -474,7 +474,7 @@ Na transmissão, esses pontos e traços são convertidos em sinais físicos que 
 ### Explicação dos Arquivos do Código Morse
 O programa está separdo por arquivos que possuem diferentes funcionalidades, que juntos podem captar batidas pelo microfone, identificar se os sons recebidos são pontos ou traços, converter os sinais em letras e palavras e emitir batidas em áudio para outros computadores.
 
-#### Arquivo *decodificador_morse*
+#### Arquivo decodificador_morse
 **Código Caractere** 
 
 * Permite que a criação de um dicionário que contém uma tabela de morse para os símbolos e que faz o caminho inverso também.
