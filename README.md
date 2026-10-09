@@ -479,7 +479,7 @@ O programa está separdo por arquivos que possuem diferentes funcionalidades, qu
 
 * Permite que a criação de um dicionário que contém uma tabela de morse para os símbolos e que faz o caminho inverso também.
 
-**Função texto_para_morse**
+**Função texto_para_morse()**
 
 * Remove acetuação das palavras;
 * Converte as letras para maiúsculas;
@@ -488,15 +488,18 @@ O programa está separdo por arquivos que possuem diferentes funcionalidades, qu
 * Identifica os caracteres que não estão na lista, e não serã convertidos;
 
 **Clase DecodificadorMorse**
+
 È responsável por configuara os tempos usados no processamento
 * *duração_bloco*: duração de cada bloco de aúdio;
 * *silencio_simbolo_s*: silêncio necessaŕio para satisfazer a um ponto ou traço;
 * *silencio_letra_s*: silêncio necessário para fechar uma letra;
 
 **Método reiniciar**
+
 Descarta tudo o que estava sendo montado , icluindo as batidas, tempo de silêncio, o código, indicação de símbolo inválido e o controle de separação entre as palavras. Permite que uma nova mensagem seja reeniciada sem interferência da gerada anteriormente.
 
 **Método processar_bloco**
+
 Capta o resultado da detecção de áudio e decide o significado das batidas.
 
 * 1. Conta as batidas;
@@ -513,6 +516,7 @@ Sua responsabilidade é apenas detectar um evento sonoro, a biblioteca *numpy* r
 Calcula o RMS,fornece a medida da intensidade do sinal sonor, de um bloco de áudio. E retorna por *np.sqr*, *np.mean*, *np.square* o quadrado, a média e a raiz quadrada da média das amostras recebidas, quanto maior o resultado maior a intensidade do som.
 
 **Classe DetectorDeBatidas**
+
 Responsável pela calibração e detecção de batidas, a partir dos parâmentros necessários:
 
 * taxa_amostragem: throughput das amostras;
@@ -525,6 +529,7 @@ bloco;
 * tambem incializa tempo decorrido, nível de áudio e estado de detecção;
 
 **Método processar_bloco(self, bloco)**
+
 Recebe um bloco de áudio e retorna *True* quando uma batida é validade, e *False* quando contrário.
 
 * 1. Calibração do ruído ambiente;
@@ -532,18 +537,23 @@ Recebe um bloco de áudio e retorna *True* quando uma batida é validade, e *Fal
 * 3. Controle do tempo mínimo entre as detecções;
 
 #### Arquivo receptor_morse
+
 Funciona como suporte para programas de recepção e permissão de sinais de áudio.
 
 **Função callback_audio()**
+
 È chamada pela biblioteca *sounddevice* sempre que um novo bloco de áudio está disponível, e organiza em uma fileira para ser processado posteriormente.
 
-**Função ler_teclado**
+**Função ler_teclado()**
+
 Durante a recepção de áudio, o ENTER apaga a mensagem e o decodificador é reeniciado. Depois do encerramento da recepção o texto digitado é enviado à fila de comandos para ser interpretado.
 
-**Função montar_som**
+**Função montar_som()**
+
 Converte as frequências e duraçĩes recebidas em amotras válidas de áudio.
 
-**Função plano_de_emissão**
+**Função plano_de_emissão()**
+
 Recebe a mensagem já convertida para Morse e monta um sequência de itens que informa os símbolos, tempo de espera antes dele, qual letra ele pertence e se incia uma letra ou palavra. Assim como diferencia pausa entre símbolos, letras e palavras.
 
 **Função emitir()**
