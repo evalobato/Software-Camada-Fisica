@@ -766,3 +766,13 @@ Nosso problema dentro do trabalho foi muito com ruídos externos então teriamos
 No arquivo *README.md* a inteligêcia artificial foi utilizada de forma a assegurar que o que foi escrito estava de acordo com as informações verídicas relacionadas à camada física, assim como para geração de bibliografia a fim de facilitar o encontro de matérias dos assuntos abordados que normalmente se encontravam na lígua inglesa, assim como na correção de texto feita após escrita manual por um dos integrantes do grupo, 
 
 A inteligência artificial foi altamente utilizada para geração dos códigos contidos no projeto, todas suas classes, métodos e funções no geral foram feitas pela IA, apenas algumas variáveis foram trocadas para se adequar às especificações descritas pelo professor.
+
+## Contribuição dos integrantes
+
+| Integrante | Contribuição |
+|---|---|
+| Vitórias Martins | Principal responsável pelo código, sendo responsável por interpretar e entender o código e modificá-lo conforme as exigências do projeto |
+| Eva Lobato | Principal responsavel pelo Read.me [fundamentação teorica, arquitetura das soluções, desafios e conclusão] |
+| Flávia e Souza | Contribuiu com a escrita do read.me [explicação do código utilizado nos métodos e detecção de erros] e participou de testes de comunicação e da gravação do vídeo. |
+| Nicole Neves | Responsável pelos testes de comunicação entre computadores e gravação. |
+| Felipe Lazarino | Responsável pelos testes de comunicação entre computadores e gravação. |
