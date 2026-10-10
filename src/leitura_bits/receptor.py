@@ -7,7 +7,7 @@ formando quadros de 9 bits. O receptor confere cada quadro assim que ele fecha.
 import os
 import queue
 import sys
-import threading
+import threadingde
 import time
 import traceback
 

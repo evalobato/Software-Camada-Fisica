@@ -528,6 +528,77 @@ Essa função permite que o usuário digite diretamente uma sequência binária,
 
 Recebe uma sequência de bits com quadros de paridade e reconstrói o texto utilizando somente os quadros considerados válidos.
 
+### Arquivo receptor
+
+Esse arquivo é o programa principal do projeto de transmissão de bits por batidas sonoras, utilizando o microfone para receber os sinais, convertendo as batidas em 0 e 1 e verificando possíveis erros com paridade par.
+
+**Função montar_som**
+
+Essa função recebe uma lista de pares (frequência, duração) e gera as amostras necessárias para formar o som.
+
+**Função preparar_sons()**
+
+Essa função percorre o dicionário SONS e prepara os sinais antecipadamente.
+Ela preenche três dicionários:
+* 1. SONS_PRONTOS: armazena as amostras dos sons que serão emitidos.
+* 2. DURACAO_SONS: armazena a duração de cada som.
+* 3. SONS_CONFIRMA: armazena os sons de confirmação com um pequeno silêncio inicial.
+Preparar os sons antes da transmissão evita precisar gerar cada onda no momento em que ela será tocada.
+
+**Função tocar()**
+
+Reproduz um som de confirmação. Primeiro, verifica se os sons estão habilitados. Se SOM_ATIVO for falso, retorna 0.0 sem tocar nada. Se houver um erro de áudio, ela imprime uma mensagem, desativa os sons de confirmação e retorna 0.0.
+
+**Função reproduzir_bits(bits)**
+
+Essa função permite transmitir uma sequência de bits por meio de sons.
+Ela é importante porque o programa também pode funcionar como emissor, e não apenas como receptor.
+O processo é:
+* 1. Receber a lista de bits a transmitir.
+* 2. Definir o intervalo entre os sons.
+* 3. Preparar uma ação para cada bit, incluindo sua posição na sequência.
+* 4. Usar funções do módulo plataforma para montar e reproduzir a sequência sonora.
+* 5. Exibir o progresso e tratar possíveis interrupções ou erros.
+
+**Função menu_final(bits)**
+
+O menu final é exibido quando a recepção é encerrada. Ele permite consultar a sequência recebida ou iniciar novas transmissões.
+Os comandos disponíveis são:
+Comando	Ação
+* r	Reproduz os bits que estão na memória.
+* e	Permite digitar um texto e emitir seus bits.
+* b	Permite digitar bits manualmente e emitir os quadros correspondentes.
+* s	Sai do menu.
+Quando o usuário escolhe e, o programa chama *quadros_do_texto*. Quando escolhe b, chama *quadros_de_bits_digitados*. Se os dados forem válidos, a sequência é atualizada e transmitida com *reproduzir_bits*. Se houver um erro de validação, a mensagem correspondente é exibida e o menu continua disponível.
+
+**Função mostrar_bit_grande(bit)**
+
+Essa função imprime o bit recebido em tamanho grande no terminal, usando os desenhos definidos no dicionário DIGITOS. O dicionário contém representações visuais dos números 0 e 1, compostas por caracteres de texto.
+
+**Função formatar_sequencia(bits)**
+
+Essa função formata a sequência recebida para facilitar a leitura. Ela utiliza cores ANSI para distinguir os bits e separa visualmente os quadros de 9 bits. O nono bit de cada quadro, que corresponde à paridade, recebe sublinhado. Assim, é possível visualizar os dados recebidos sem confundir os bits de dados com os bits de paridade.
+
+**Função descrever_quadros(bits)**
+
+Essa função percorre os quadros completos da sequência e monta uma descrição de cada um.
+Para cada quadro, ela:
+* 1. Obtém os 9 bits correspondentes.
+* 2. Chama analisar_ultimo() para recuperar os dados e o resultado da verificação.
+* 3. Usa dados_para_texto() para converter os dados em um valor numérico e, quando possível, em um caractere.
+* 4. Exibe o estado do quadro como OK ou ERRO.
+Se houver bits insuficientes para completar o último quadro, ela também informa quantos bits ainda faltam.
+
+**Função preparar_plataforma()**
+
+Essa função prepara o ambiente antes de iniciar a transmissão ou a recepção.
+Ela executa quatro tarefas principais:
+* 1. Configura a saída do terminal.
+* 2. Lê os argumentos passados na execução do programa.
+* 3. Verifica se o usuário deseja listar os dispositivos de áudio ou executar no modo de emissão.
+* 4. Define os dispositivos de entrada e saída e escolhe uma taxa de amostragem compatível.
+O uso de global permite que a função altere as variáveis globais utilizadas pelo restante do programa.
+
 ## Segundo Método - Código Morse 
 
 O código morse é uma forma de comunição que ainda é muito utilizado entre os usuários de rádio amador por causa de suas vantagens únicas, é composto por pontos, traços e espaços que representam letras, números e sinais de pontuação aplamente utilizado por governos e militares. Esse sistema permite a transmissão de mensagens à distância, por fio ou rádio, através de sons de longa e curta duração.
